@@ -1,0 +1,14 @@
+@import "tailwindcss" theme(static);
+@import "@nuxt/ui";
+
+
+:root {
+    --ui-radius: 0.50rem;
+}
+
+
+
+@theme static {
+    --font-sans: 'Public Sans', sans-serif;
+
+}
