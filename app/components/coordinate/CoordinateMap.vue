@@ -168,8 +168,7 @@
 </template>
 
 <script setup lang="ts">
-import type { PointExpression } from 'leaflet'
-import L from 'leaflet'
+
 const props = defineProps({
     center: {
         type: Array as PropType<[number, number]>,

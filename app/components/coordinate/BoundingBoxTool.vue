@@ -230,102 +230,105 @@
                             ✓ Centro seleccionado - Ajusta el radio
                         </span>
                     </div>
-
-                    <LMap
-                        ref="mapRef"
-                        :zoom="mapZoom"
-                        :center="mapCenter"
-                        :use-global-leaflet="false"
-                        :style="{ height: '500px' }"
-                        class="w-full rounded-lg shadow-md z-0"
-                        @click="handleMapClick"
-                    >
-                        <LTileLayer
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            attribution="&copy; OpenStreetMap contributors"
-                        />
-
-                        <!-- Marcador del centro -->
-                        <LMarker
-                            v-if="centerMarker"
-                            :lat-lng="centerMarker"
+                    <client-only>
+                        <LMap
+                            ref="mapRef"
+                            :zoom="mapZoom"
+                            :center="mapCenter"
+                            :use-global-leaflet="false"
+                            :style="{ height: '500px' }"
+                            class="w-full rounded-lg shadow-md z-0"
+                            @click="handleMapClick"
                         >
-                            <LIcon :icon-size="[32, 32]" :icon-anchor="[16, 32]">
-                                <div class="relative">
-                                    <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-purple-500 text-white px-2 py-0.5 rounded text-xs font-bold whitespace-nowrap shadow-lg">
-                                        Centro
+                            <LTileLayer
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                attribution="&copy; OpenStreetMap contributors"
+                            />
+
+                            <!-- Marcador del centro -->
+                            <LMarker
+                                v-if="centerMarker"
+                                :lat-lng="centerMarker"
+                            >
+                                <LIcon :icon-size="[32, 32]" :icon-anchor="[16, 32]">
+                                    <div class="relative">
+                                        <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-purple-500 text-white px-2 py-0.5 rounded text-xs font-bold whitespace-nowrap shadow-lg">
+                                            Centro
+                                        </div>
+                                        <div class="w-7 h-7 bg-purple-500 rounded-full border-3 border-white shadow-lg flex items-center justify-center">
+                                            <UIcon name="i-heroicons-plus" class="w-4 h-4 text-white" />
+                                        </div>
+                                        <div class="absolute top-7 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-purple-500"></div>
                                     </div>
-                                    <div class="w-7 h-7 bg-purple-500 rounded-full border-3 border-white shadow-lg flex items-center justify-center">
-                                        <UIcon name="i-heroicons-plus" class="w-4 h-4 text-white" />
-                                    </div>
-                                    <div class="absolute top-7 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-purple-500"></div>
-                                </div>
-                            </LIcon>
-                            <LPopup>
-                                <div class="text-xs font-mono">
-                                    <div class="font-semibold mb-1 text-purple-600">Centro del Área</div>
-                                    <div>Lat: {{ centerMarker[0].toFixed(6) }}</div>
-                                    <div>Lon: {{ centerMarker[1].toFixed(6) }}</div>
-                                    <div class="mt-1 text-purple-600">Radio: {{ radius || 0 }} km</div>
-                                </div>
-                            </LPopup>
-                        </LMarker>
-
-                        <!-- Círculo del radio (preview en tiempo real) -->
-                        <LCircle
-                            v-if="centerMarker && radius"
-                            :lat-lng="centerMarker"
-                            :radius="parseFloat(radius) * 1000"
-                            color="#8b5cf6"
-                            :weight="2"
-                            :fillOpacity="0.1"
-                        />
-
-                        <!-- Rectángulo del bounding box (solo cuando está calculado) -->
-                        <LRectangle
-                            v-if="result && rectangleBounds.length > 0"
-                            :lat-lngs="rectangleBounds"
-                            color="#3b82f6"
-                            :weight="2"
-                            :fillOpacity="0.05"
-                            :dashArray="[10, 5]"
-                        />
-
-                        <!-- Marcadores de las esquinas -->
-                        <template v-if="result">
-                            <!-- Esquina Noreste -->
-                            <LMarker :lat-lng="[result.bounding_box.northeast.lat, result.bounding_box.northeast.lon]">
-                                <LIcon :icon-size="[16, 16]" :icon-anchor="[8, 8]">
-                                    <div class="w-3 h-3 bg-blue-500 rounded-sm border border-white shadow-md"></div>
                                 </LIcon>
                                 <LPopup>
-                                    <div class="text-xs">
-                                        <div class="font-semibold">Noreste</div>
-                                        <div class="font-mono text-[10px]">
-                                            {{ result.bounding_box.northeast.lat.toFixed(6) }},
-                                            {{ result.bounding_box.northeast.lon.toFixed(6) }}
-                                        </div>
+                                    <div class="text-xs font-mono">
+                                        <div class="font-semibold mb-1 text-purple-600">Centro del Área</div>
+                                        <div>Lat: {{ centerMarker[0].toFixed(6) }}</div>
+                                        <div>Lon: {{ centerMarker[1].toFixed(6) }}</div>
+                                        <div class="mt-1 text-purple-600">Radio: {{ radius || 0 }} km</div>
                                     </div>
                                 </LPopup>
                             </LMarker>
 
-                            <!-- Esquina Suroeste -->
-                            <LMarker :lat-lng="[result.bounding_box.southwest.lat, result.bounding_box.southwest.lon]">
-                                <LIcon :icon-size="[16, 16]" :icon-anchor="[8, 8]">
-                                    <div class="w-3 h-3 bg-green-500 rounded-sm border border-white shadow-md"></div>
-                                </LIcon>
-                                <LPopup>
-                                    <div class="text-xs">
-                                        <div class="font-semibold">Suroeste</div>
-                                        <div class="font-mono text-[10px]">
-                                            {{ result.bounding_box.southwest.lat.toFixed(6) }},
-                                            {{ result.bounding_box.southwest.lon.toFixed(6) }}
+                            <!-- Círculo del radio (preview en tiempo real) -->
+                            <LCircle
+                                v-if="centerMarker && radius"
+                                :lat-lng="centerMarker"
+                                :radius="parseFloat(radius) * 1000"
+                                color="#8b5cf6"
+                                :weight="2"
+                                :fillOpacity="0.1"
+                            />
+
+                            <!-- Rectángulo del bounding box (solo cuando está calculado) -->
+                            <LRectangle
+                                v-if="result && rectangleBounds.length > 0"
+                                :lat-lngs="rectangleBounds"
+                                color="#3b82f6"
+                                :weight="2"
+                                :fillOpacity="0.05"
+                                :dashArray="[10, 5]"
+                            />
+
+                            <!-- Marcadores de las esquinas -->
+                            <template v-if="result">
+                                <!-- Esquina Noreste -->
+                                <LMarker :lat-lng="[result.bounding_box.northeast.lat, result.bounding_box.northeast.lon]">
+                                    <LIcon :icon-size="[16, 16]" :icon-anchor="[8, 8]">
+                                        <div class="w-3 h-3 bg-blue-500 rounded-sm border border-white shadow-md"></div>
+                                    </LIcon>
+                                    <LPopup>
+                                        <div class="text-xs">
+                                            <div class="font-semibold">Noreste</div>
+                                            <div class="font-mono text-[10px]">
+                                                {{ result.bounding_box.northeast.lat.toFixed(6) }},
+                                                {{ result.bounding_box.northeast.lon.toFixed(6) }}
+                                            </div>
                                         </div>
-                                    </div>
-                                </LPopup>
-                            </LMarker>
-                        </template>
-                    </LMap>
+                                    </LPopup>
+                                </LMarker>
+
+                                <!-- Esquina Suroeste -->
+                                <LMarker :lat-lng="[result.bounding_box.southwest.lat, result.bounding_box.southwest.lon]">
+                                    <LIcon :icon-size="[16, 16]" :icon-anchor="[8, 8]">
+                                        <div class="w-3 h-3 bg-green-500 rounded-sm border border-white shadow-md"></div>
+                                    </LIcon>
+                                    <LPopup>
+                                        <div class="text-xs">
+                                            <div class="font-semibold">Suroeste</div>
+                                            <div class="font-mono text-[10px]">
+                                                {{ result.bounding_box.southwest.lat.toFixed(6) }},
+                                                {{ result.bounding_box.southwest.lon.toFixed(6) }}
+                                            </div>
+                                        </div>
+                                    </LPopup>
+                                </LMarker>
+                            </template>
+                        </LMap>
+                    </client-only>
+
+
 
                     <!-- Leyenda -->
                     <div v-if="centerMarker" class="mt-2 bg-white dark:bg-neutral-800 rounded-lg p-2 text-xs space-y-1">

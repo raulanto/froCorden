@@ -209,66 +209,69 @@
                             Haz clic en el mapa para seleccionar coordenadas
                         </span>
                     </div>
-                    <LMap
-                        ref="mapRef"
-                        :zoom="mapZoom"
-                        :center="mapCenter"
-                        :use-global-leaflet="false"
-                        :style="{ height: '400px' }"
-                        class="w-full rounded-lg shadow-md z-0"
-                        @click="handleMapClick"
-                    >
-                        <LTileLayer
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            attribution="&copy; OpenStreetMap contributors"
-                        />
-
-                        <!-- Marcador de entrada -->
-                        <LMarker
-                            v-if="inputMarker"
-                            :lat-lng="inputMarker"
+                    <client-only>
+                        <LMap
+                            ref="mapRef"
+                            :zoom="mapZoom"
+                            :center="mapCenter"
+                            :use-global-leaflet="false"
+                            :style="{ height: '400px' }"
+                            class="w-full rounded-lg shadow-md z-0"
+                            @click="handleMapClick"
                         >
-                            <LIcon :icon-size="[30, 30]" :icon-anchor="[15, 30]">
-                                <div class="relative">
-                                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-blue-500 text-white px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap shadow-lg">
-                                        Entrada
-                                    </div>
-                                    <div class="w-6 h-6 bg-blue-500 rounded-full border-3 border-white shadow-lg"></div>
-                                    <div class="absolute top-6 left-1/2 -translate-x-1/2 w-0.5 h-3 bg-blue-500"></div>
-                                </div>
-                            </LIcon>
-                            <LPopup>
-                                <div class="text-xs font-mono">
-                                    <div class="font-semibold mb-1">Punto de Entrada</div>
-                                    <div>Lat: {{ inputMarker[0].toFixed(6) }}</div>
-                                    <div>Lon: {{ inputMarker[1].toFixed(6) }}</div>
-                                </div>
-                            </LPopup>
-                        </LMarker>
+                            <LTileLayer
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                attribution="&copy; OpenStreetMap contributors"
+                            />
 
-                        <!-- Marcador de salida (si es diferente) -->
-                        <LMarker
-                            v-if="outputMarker && !areMarkersEqual"
-                            :lat-lng="outputMarker"
-                        >
-                            <LIcon :icon-size="[30, 30]" :icon-anchor="[15, 30]">
-                                <div class="relative">
-                                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-green-500 text-white px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap shadow-lg">
-                                        Salida
+                            <!-- Marcador de entrada -->
+                            <LMarker
+                                v-if="inputMarker"
+                                :lat-lng="inputMarker"
+                            >
+                                <LIcon :icon-size="[30, 30]" :icon-anchor="[15, 30]">
+                                    <div class="relative">
+                                        <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-blue-500 text-white px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap shadow-lg">
+                                            Entrada
+                                        </div>
+                                        <div class="w-6 h-6 bg-blue-500 rounded-full border-3 border-white shadow-lg"></div>
+                                        <div class="absolute top-6 left-1/2 -translate-x-1/2 w-0.5 h-3 bg-blue-500"></div>
                                     </div>
-                                    <div class="w-6 h-6 bg-green-500 rounded-full border-3 border-white shadow-lg"></div>
-                                    <div class="absolute top-6 left-1/2 -translate-x-1/2 w-0.5 h-3 bg-green-500"></div>
-                                </div>
-                            </LIcon>
-                            <LPopup>
-                                <div class="text-xs font-mono">
-                                    <div class="font-semibold mb-1">Punto de Salida</div>
-                                    <div>Lat: {{ outputMarker[0].toFixed(6) }}</div>
-                                    <div>Lon: {{ outputMarker[1].toFixed(6) }}</div>
-                                </div>
-                            </LPopup>
-                        </LMarker>
-                    </LMap>
+                                </LIcon>
+                                <LPopup>
+                                    <div class="text-xs font-mono">
+                                        <div class="font-semibold mb-1">Punto de Entrada</div>
+                                        <div>Lat: {{ inputMarker[0].toFixed(6) }}</div>
+                                        <div>Lon: {{ inputMarker[1].toFixed(6) }}</div>
+                                    </div>
+                                </LPopup>
+                            </LMarker>
+
+                            <!-- Marcador de salida (si es diferente) -->
+                            <LMarker
+                                v-if="outputMarker && !areMarkersEqual"
+                                :lat-lng="outputMarker"
+                            >
+                                <LIcon :icon-size="[30, 30]" :icon-anchor="[15, 30]">
+                                    <div class="relative">
+                                        <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-green-500 text-white px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap shadow-lg">
+                                            Salida
+                                        </div>
+                                        <div class="w-6 h-6 bg-green-500 rounded-full border-3 border-white shadow-lg"></div>
+                                        <div class="absolute top-6 left-1/2 -translate-x-1/2 w-0.5 h-3 bg-green-500"></div>
+                                    </div>
+                                </LIcon>
+                                <LPopup>
+                                    <div class="text-xs font-mono">
+                                        <div class="font-semibold mb-1">Punto de Salida</div>
+                                        <div>Lat: {{ outputMarker[0].toFixed(6) }}</div>
+                                        <div>Lon: {{ outputMarker[1].toFixed(6) }}</div>
+                                    </div>
+                                </LPopup>
+                            </LMarker>
+                        </LMap>
+                    </client-only>
+
                 </div>
             </div>
         </div>

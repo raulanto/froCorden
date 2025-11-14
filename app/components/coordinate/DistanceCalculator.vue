@@ -216,93 +216,96 @@
                             ✓ Puntos seleccionados - Haz clic para cambiar
                         </span>
                     </div>
-
-                    <LMap
-                        ref="mapRef"
-                        :zoom="mapZoom"
-                        :center="mapCenter"
-                        :use-global-leaflet="false"
-                        :style="{ height: '450px' }"
-                        class="w-full rounded-lg shadow-md z-0"
-                        @click="handleMapClick"
-                    >
-                        <LTileLayer
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            attribution="&copy; OpenStreetMap contributors"
-                        />
-
-                        <!-- Marcador Punto 1 -->
-                        <LMarker
-                            v-if="marker1"
-                            :lat-lng="marker1"
+                    <client-only>
+                        <LMap
+                            ref="mapRef"
+                            :zoom="mapZoom"
+                            :center="mapCenter"
+                            :use-global-leaflet="false"
+                            :style="{ height: '450px' }"
+                            class="w-full rounded-lg shadow-md z-0"
+                            @click="handleMapClick"
                         >
-                            <LIcon :icon-size="[32, 32]" :icon-anchor="[16, 32]">
-                                <div class="relative">
-                                    <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-blue-500 text-white px-2 py-0.5 rounded text-xs font-bold whitespace-nowrap shadow-lg">
-                                        P1
-                                    </div>
-                                    <div class="w-7 h-7 bg-blue-500 rounded-full border-3 border-white shadow-lg flex items-center justify-center text-white font-bold text-xs">
-                                        1
-                                    </div>
-                                    <div class="absolute top-7 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-blue-500"></div>
-                                </div>
-                            </LIcon>
-                            <LPopup>
-                                <div class="text-xs font-mono">
-                                    <div class="font-semibold mb-1 text-blue-600">Punto 1</div>
-                                    <div>Lat: {{ marker1[0].toFixed(6) }}</div>
-                                    <div>Lon: {{ marker1[1].toFixed(6) }}</div>
-                                </div>
-                            </LPopup>
-                        </LMarker>
-
-                        <!-- Marcador Punto 2 -->
-                        <LMarker
-                            v-if="marker2"
-                            :lat-lng="marker2"
-                        >
-                            <LIcon :icon-size="[32, 32]" :icon-anchor="[16, 32]">
-                                <div class="relative">
-                                    <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-green-500 text-white px-2 py-0.5 rounded text-xs font-bold whitespace-nowrap shadow-lg">
-                                        P2
-                                    </div>
-                                    <div class="w-7 h-7 bg-green-500 rounded-full border-3 border-white shadow-lg flex items-center justify-center text-white font-bold text-xs">
-                                        2
-                                    </div>
-                                    <div class="absolute top-7 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-green-500"></div>
-                                </div>
-                            </LIcon>
-                            <LPopup>
-                                <div class="text-xs font-mono">
-                                    <div class="font-semibold mb-1 text-green-600">Punto 2</div>
-                                    <div>Lat: {{ marker2[0].toFixed(6) }}</div>
-                                    <div>Lon: {{ marker2[1].toFixed(6) }}</div>
-                                </div>
-                            </LPopup>
-                        </LMarker>
-
-                        <!-- Línea entre puntos con distancia -->
-                        <template v-if="marker1 && marker2">
-                            <LPolyline
-                                :lat-lngs="[marker1, marker2]"
-                                color="#8b5cf6"
-                                :weight="3"
-                                :dashArray="result ? undefined : [10, 5]"
+                            <LTileLayer
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                attribution="&copy; OpenStreetMap contributors"
                             />
 
-                            <!-- Marcador con la distancia en el punto medio -->
+                            <!-- Marcador Punto 1 -->
                             <LMarker
-                                v-if="result"
-                                :lat-lng="midPoint"
+                                v-if="marker1"
+                                :lat-lng="marker1"
                             >
-                                <LIcon :icon-size="[120, 30]" :icon-anchor="[60, 15]">
-                                    <div class="bg-purple-500 text-white px-3 py-1 rounded-full shadow-lg font-bold text-sm whitespace-nowrap border-2 border-white">
-                                        {{ result.distance }} {{ result.unit }}
+                                <LIcon :icon-size="[32, 32]" :icon-anchor="[16, 32]">
+                                    <div class="relative">
+                                        <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-blue-500 text-white px-2 py-0.5 rounded text-xs font-bold whitespace-nowrap shadow-lg">
+                                            P1
+                                        </div>
+                                        <div class="w-7 h-7 bg-blue-500 rounded-full border-3 border-white shadow-lg flex items-center justify-center text-white font-bold text-xs">
+                                            1
+                                        </div>
+                                        <div class="absolute top-7 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-blue-500"></div>
                                     </div>
                                 </LIcon>
+                                <LPopup>
+                                    <div class="text-xs font-mono">
+                                        <div class="font-semibold mb-1 text-blue-600">Punto 1</div>
+                                        <div>Lat: {{ marker1[0].toFixed(6) }}</div>
+                                        <div>Lon: {{ marker1[1].toFixed(6) }}</div>
+                                    </div>
+                                </LPopup>
                             </LMarker>
-                        </template>
-                    </LMap>
+
+                            <!-- Marcador Punto 2 -->
+                            <LMarker
+                                v-if="marker2"
+                                :lat-lng="marker2"
+                            >
+                                <LIcon :icon-size="[32, 32]" :icon-anchor="[16, 32]">
+                                    <div class="relative">
+                                        <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-green-500 text-white px-2 py-0.5 rounded text-xs font-bold whitespace-nowrap shadow-lg">
+                                            P2
+                                        </div>
+                                        <div class="w-7 h-7 bg-green-500 rounded-full border-3 border-white shadow-lg flex items-center justify-center text-white font-bold text-xs">
+                                            2
+                                        </div>
+                                        <div class="absolute top-7 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-green-500"></div>
+                                    </div>
+                                </LIcon>
+                                <LPopup>
+                                    <div class="text-xs font-mono">
+                                        <div class="font-semibold mb-1 text-green-600">Punto 2</div>
+                                        <div>Lat: {{ marker2[0].toFixed(6) }}</div>
+                                        <div>Lon: {{ marker2[1].toFixed(6) }}</div>
+                                    </div>
+                                </LPopup>
+                            </LMarker>
+
+                            <!-- Línea entre puntos con distancia -->
+                            <template v-if="marker1 && marker2">
+                                <LPolyline
+                                    :lat-lngs="[marker1, marker2]"
+                                    color="#8b5cf6"
+                                    :weight="3"
+                                    :dashArray="result ? undefined : [10, 5]"
+                                />
+
+                                <!-- Marcador con la distancia en el punto medio -->
+                                <LMarker
+                                    v-if="result"
+                                    :lat-lng="midPoint"
+                                >
+                                    <LIcon :icon-size="[120, 30]" :icon-anchor="[60, 15]">
+                                        <div class="bg-purple-500 text-white px-3 py-1 rounded-full shadow-lg font-bold text-sm whitespace-nowrap border-2 border-white">
+                                            {{ result.distance }} {{ result.unit }}
+                                        </div>
+                                    </LIcon>
+                                </LMarker>
+                            </template>
+                        </LMap>
+                    </client-only>
+
+
                 </div>
             </div>
         </div>
