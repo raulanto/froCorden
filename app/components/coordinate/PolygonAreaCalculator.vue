@@ -496,7 +496,7 @@ const handleMapClick = (event: any) => {
         description: `${newPoint.lat.toFixed(5)}, ${newPoint.lng.toFixed(5)}`,
         color: 'primary',
         icon: 'i-heroicons-map-pin',
-        timeout: 2000
+
     })
 
     updateMapView()
@@ -517,7 +517,7 @@ const handleMarkerDrag = (event: any, index: number) => {
         description: `Nueva posición: ${newLatLng.lat.toFixed(5)}, ${newLatLng.lng.toFixed(5)}`,
         color: 'info',
         icon: 'i-heroicons-arrows-pointing-out',
-        timeout: 2000
+
     })
 }
 
@@ -528,7 +528,7 @@ const removePoint = (index: number) => {
     toast.add({
         title: 'Vértice eliminado',
         color: 'warning',
-        timeout: 2000
+
     })
 }
 
@@ -543,7 +543,7 @@ const clearPolygon = () => {
         title: 'Polígono limpiado',
         description: 'Todos los puntos han sido eliminados',
         color: 'neutral',
-        timeout: 2000
+
     })
 }
 
@@ -581,7 +581,7 @@ const calculateArea = async () => {
             description: `Área: ${formatNumber(area[selectedUnit.value.value])} ${selectedUnit.value.label}`,
             color: 'success',
             icon: 'i-heroicons-check-circle',
-            timeout: 3000
+
         })
     } catch (e: any) {
         error.value = e.message || 'Error al calcular el área'
@@ -674,7 +674,7 @@ const copyToClipboard = (text: any, label: string) => {
         title: `${label} copiado`,
         icon: 'i-heroicons-clipboard-document-check',
         color: 'success',
-        timeout: 2000
+
     })
 }
 
@@ -711,7 +711,7 @@ const exportGeoJSON = () => {
     toast.add({
         title: 'GeoJSON exportado exitosamente',
         color: 'success',
-        timeout: 2000
+
     })
 }
 
@@ -741,7 +741,7 @@ const exportCSV = () => {
     toast.add({
         title: 'CSV exportado exitosamente',
         color: 'success',
-        timeout: 2000
+
     })
 }
 
