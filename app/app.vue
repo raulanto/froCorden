@@ -12,6 +12,10 @@ const items = computed<NavigationMenuItem[]>(() => [{
     to: '/herramientas',
 
 }, {
+    label: 'Visor',
+    to: '/visor',
+    icon:'i-heroicons-map',
+},{
     label: 'Documentación API',
     icon:'i-heroicons-book-open',
     to: 'https://api-coorden.vercel.app/#/',
