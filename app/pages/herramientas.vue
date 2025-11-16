@@ -3,6 +3,7 @@
 import BoundingBoxTool from "~/components/coordinate/BoundingBoxTool.vue";
 import BatchConverter from "~/components/coordinate/BatchConverter.vue";
 import DistanceCalculator from "~/components/coordinate/DistanceCalculator.vue";
+import PolygonAreaCalculator from "~/components/coordinate/PolygonAreaCalculator.vue";
 
 
 const mainTabs = [
@@ -11,6 +12,7 @@ const mainTabs = [
     {label: 'Calculadora de Distancias', icon: 'i-heroicons-map-pin', slot: 'examples2'},
     {label: 'Generador de Bounding Box', icon: 'i-heroicons-square-3-stack-3d',  slot: 'examples3'},
     {label: 'Conversión por Lotes', icon: 'i-heroicons-document-duplicate',  slot: 'examples4'},
+    {label: 'Calculadora de Área de Polígonos', icon: 'i-heroicons-cube',  slot: 'examples5'},
 ]
 const handlePointSelected = (point: any) => {
     console.log('Punto seleccionado:', point)
@@ -24,7 +26,7 @@ const handleInfoLoaded = (info: any) => {
 
 <template>
     <UContainer class="">
-        <UTabs :items="mainTabs" class="mb-8 mt-4">
+        <UTabs :items="mainTabs" class="mb-8 mt-4" >
             <!-- Tab: Mapa Interactivo -->
             <template #map>
                 <div class="mt-6">
@@ -69,6 +71,12 @@ const handleInfoLoaded = (info: any) => {
             <template #examples4>
                 <div class="mt-6 space-y-6">
                     <BatchConverter/>
+                </div>
+            </template>
+
+            <template #examples5>
+                <div class="mt-6 space-y-6">
+                    <PolygonAreaCalculator/>
                 </div>
             </template>
         </UTabs>
