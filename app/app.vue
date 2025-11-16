@@ -24,6 +24,12 @@ const items = computed<NavigationMenuItem[]>(() => [{
     label: 'Ejemplos y Documentación',
     to: '/usos',
 }])
+
+useSeoMeta({
+    ogImage: '/img.png',
+});
+
+
 </script>
 
 <template>
