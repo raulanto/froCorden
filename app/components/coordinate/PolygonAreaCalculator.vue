@@ -400,32 +400,32 @@
                         </div>
                     </div>
 
+                    <div class="grid grid-cols-2 gap-2">
+                        <UButton
+                            block
+                            size="sm"
+                            color="primary"
+                            variant="soft"
 
+                            icon="i-heroicons-arrow-down-tray"
+                            @click="exportGeoJSON"
+                        >
+                            GeoJSON
+                        </UButton>
+                        <UButton
+                            block
+                            size="sm"
+                            color="secondary"
+                            variant="soft"
+
+                            icon="i-heroicons-document-text"
+                            @click="exportCSV"
+                        >
+                            CSV
+                        </UButton>
+                    </div>
                 </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <UButton
-                        block
-                        size="sm"
-                        color="primary"
-                        variant="soft"
 
-                        icon="i-heroicons-arrow-down-tray"
-                        @click="exportGeoJSON"
-                    >
-                        GeoJSON
-                    </UButton>
-                    <UButton
-                        block
-                        size="sm"
-                        color="secondary"
-                        variant="soft"
-
-                        icon="i-heroicons-document-text"
-                        @click="exportCSV"
-                    >
-                        CSV
-                    </UButton>
-                </div>
                 <!-- Error -->
                 <UAlert
                     v-if="error"
