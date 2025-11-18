@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
-
+import { Analytics } from '@vercel/analytics/nuxt'
 const route = useRoute()
 
 const items = computed<NavigationMenuItem[]>(() => [{
@@ -33,6 +33,7 @@ useSeoMeta({
 </script>
 
 <template>
+    <Analytics/>
     <UApp>
         <UHeader>
             <template #title>

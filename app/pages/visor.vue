@@ -454,7 +454,7 @@
                             />
                         </div>
                     </template>
-                    <template #body>
+                    <template #body >
                         <div v-if="editingFeature" class="space-y-4">
                             <!-- Propiedades básicas -->
                             <div class="space-y-3">
