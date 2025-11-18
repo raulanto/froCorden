@@ -10,7 +10,7 @@
                         </div>
                         <div>
                             <h2 class="text-xl font-bold">Visor de Archivos Geográficos</h2>
-                            <p class="text-xs text-neutral-500">Carga y visualiza KMZ, KML, json y CSV</p>
+                            <p class="text-xs text-neutral-500">Carga y visualiza KMZ, KML, GeoJSON y CSV</p>
                         </div>
                     </div>
                     <UBadge v-if="features.length > 0" color="success" variant="solid" size="lg">
@@ -35,7 +35,7 @@
                                     <label class="block">
                                         <input
                                             type="file"
-                                            accept=".kmz,.kml,.json,.csv"
+                                            accept=".kmz,.kml,.json,.geojson,.csv"
                                             @change="handleFileUpload"
                                             class="hidden"
                                             ref="fileInput"
@@ -47,11 +47,11 @@
                                             @click="$refs.fileInput.click()"
                                             :loading="loading"
                                         >
-                                            {{ fileName || 'Seleccionar archivo KMZ/KML/json/CSV' }}
+                                            {{ fileName || 'Seleccionar archivo' }}
                                         </UButton>
                                     </label>
                                     <p class="text-xs text-green-600 dark:text-green-400 mt-1">
-                                        Formatos soportados: .kmz, .kml, .json, .csv
+                                        Formatos: .kmz, .kml, .json, .geojson, .csv
                                     </p>
                                 </div>
                             </div>
@@ -98,8 +98,22 @@
                                                                     feature.name || 'Punto sin nombre'
                                                                 }}</span>
                                                         </div>
-                                                        <div v-if="feature.description" class="popup-description" v-html="feature.description">
+
+                                                        <!-- Descripción -->
+                                                        <div v-if="feature.description" class="popup-description" v-html="feature.description"></div>
+
+                                                        <!-- Propiedades adicionales -->
+                                                        <div v-if="feature.properties && Object.keys(feature.properties).length > 0" class="popup-properties">
+                                                            <div class="properties-title">Propiedades</div>
+                                                            <div class="properties-grid">
+                                                                <div v-for="(value, key) in feature.properties" :key="key" class="property-row">
+                                                                    <span class="property-key">{{ key }}:</span>
+                                                                    <span class="property-value">{{ value }}</span>
+                                                                </div>
+                                                            </div>
                                                         </div>
+
+                                                        <!-- Coordenadas -->
                                                         <div class="popup-coords">
                                                             <div class="coord-row">
                                                                 <span class="coord-label">Latitud:</span>
@@ -136,7 +150,19 @@
                                                                     feature.name || 'Línea sin nombre'
                                                                 }}</span>
                                                         </div>
-                                                        <div v-if="feature.description" class="popup-description" v-html="feature.description">
+
+                                                        <!-- Descripción -->
+                                                        <div v-if="feature.description" class="popup-description" v-html="feature.description"></div>
+
+                                                        <!-- Propiedades adicionales -->
+                                                        <div v-if="feature.properties && Object.keys(feature.properties).length > 0" class="popup-properties">
+                                                            <div class="properties-title">Propiedades</div>
+                                                            <div class="properties-grid">
+                                                                <div v-for="(value, key) in feature.properties" :key="key" class="property-row">
+                                                                    <span class="property-key">{{ key }}:</span>
+                                                                    <span class="property-value">{{ value }}</span>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </LPopup>
@@ -162,7 +188,19 @@
                                                                     feature.name || 'Polígono sin nombre'
                                                                 }}</span>
                                                         </div>
-                                                        <div v-if="feature.description" class="popup-description" v-html="feature.description">
+
+                                                        <!-- Descripción -->
+                                                        <div v-if="feature.description" class="popup-description" v-html="feature.description"></div>
+
+                                                        <!-- Propiedades adicionales -->
+                                                        <div v-if="feature.properties && Object.keys(feature.properties).length > 0" class="popup-properties">
+                                                            <div class="properties-title">Propiedades</div>
+                                                            <div class="properties-grid">
+                                                                <div v-for="(value, key) in feature.properties" :key="key" class="property-row">
+                                                                    <span class="property-key">{{ key }}:</span>
+                                                                    <span class="property-value">{{ value }}</span>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </LPopup>
@@ -233,9 +271,9 @@
                                 <div class="font-semibold text-green-900 dark:text-green-100 mb-2">¿Cómo usar?</div>
                                 <ol class="list-decimal list-inside space-y-1 text-green-700 dark:text-green-300">
                                     <li>Haz clic en "Seleccionar archivo"</li>
-                                    <li>Elige un archivo KMZ, KML, json o CSV</li>
+                                    <li>Elige un archivo KMZ, KML, GeoJSON o CSV</li>
                                     <li>El mapa mostrará todas las geometrías</li>
-                                    <li>Haz clic en elementos para ver detalles</li>
+                                    <li>Haz clic en elementos para ver propiedades</li>
                                 </ol>
                             </div>
                         </div>
@@ -274,7 +312,7 @@
                         <div v-if="features.length === 0" class="text-center py-8 text-neutral-500">
                             <UIcon name="i-heroicons-document-arrow-up" class="w-12 h-12 mx-auto mb-2 opacity-50"/>
                             <p class="text-sm">No hay elementos cargados</p>
-                            <p class="text-xs mt-1">Carga un archivo</p>
+                            <p class="text-xs mt-1">Carga un archivo geográfico</p>
                         </div>
 
                         <div v-else class="space-y-2 max-h-[500px] overflow-y-auto">
@@ -297,10 +335,20 @@
                                         </div>
                                         <div class="text-xs text-neutral-500">
                                             {{ feature.type }}
+                                            <span v-if="feature.properties && Object.keys(feature.properties).length > 0">
+                                                • {{ Object.keys(feature.properties).length }} props
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-2">
+                                    <button
+                                        @click="openEditProperties(index)"
+                                        class="p-1 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded"
+                                        title="Editar propiedades"
+                                    >
+                                        <UIcon name="i-heroicons-pencil-square" class="w-4 h-4"/>
+                                    </button>
                                     <button
                                         @click="zoomToFeature(feature)"
                                         class="p-1 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded"
@@ -332,7 +380,7 @@
                         <div class="space-y-1 text-xs">
                             <div class="flex justify-between">
                                 <span class="text-blue-600 dark:text-blue-400">Nombre:</span>
-                                <span class="font-semibold text-blue-700 dark:text-blue-300 truncate">{{ fileInfo.name }}</span>
+                                <span class="font-semibold text-blue-700 dark:text-blue-300 truncate max-w-[180px]">{{ fileInfo.name }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-blue-600 dark:text-blue-400">Tamaño:</span>
@@ -357,7 +405,7 @@
                             icon="i-heroicons-arrow-down-tray"
                             @click="exportGeoJSON"
                         >
-                            Exportar json
+                            Exportar GeoJSON
                         </UButton>
                         <UButton
                             block
@@ -383,18 +431,185 @@
                     />
                 </div>
             </div>
+
+            <!-- Modal para editar propiedades -->
+            <UModal v-model:open="showEditModal" :ui="{ width: 'sm:max-w-2xl' }">
+
+                    <template #header>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center">
+                                    <UIcon name="i-heroicons-pencil-square" class="w-5 h-5 text-white"/>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold">Editar Propiedades</h3>
+                                    <p class="text-xs text-neutral-500">{{ editingFeature?.name || 'Elemento' }}</p>
+                                </div>
+                            </div>
+                            <UButton
+                                color="neutral"
+                                variant="ghost"
+                                icon="i-heroicons-x-mark"
+                                @click="closeEditModal"
+                            />
+                        </div>
+                    </template>
+                    <template #body>
+                        <div v-if="editingFeature" class="space-y-4">
+                            <!-- Propiedades básicas -->
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Nombre</label>
+                                    <UInput
+                                        v-model="editingFeature.name"
+                                        placeholder="Nombre del elemento"
+                                        size="md"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Descripción</label>
+                                    <UTextarea
+                                        v-model="editingFeature.description"
+                                        placeholder="Descripción del elemento"
+                                        :rows="3"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Color</label>
+                                    <div class="flex gap-2 items-center">
+                                        <input
+                                            type="color"
+                                            v-model="editingFeature.color"
+                                            class="w-12 h-10 rounded border border-neutral-300 cursor-pointer"
+                                        />
+                                        <UInput
+                                            v-model="editingFeature.color"
+                                            placeholder="#3b82f6"
+                                            size="md"
+                                            class="flex-1"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Propiedades personalizadas -->
+                            <div class="border-t pt-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="text-sm font-semibold">Propiedades Personalizadas</h4>
+                                    <UButton
+                                        size="xs"
+                                        color="primary"
+                                        icon="i-heroicons-plus"
+                                        @click="addNewProperty"
+                                    >
+                                        Agregar Propiedad
+                                    </UButton>
+                                </div>
+
+                                <div v-if="!editingFeature.properties || Object.keys(editingFeature.properties).length === 0"
+                                     class="text-center py-4 text-neutral-500 text-sm">
+                                    No hay propiedades personalizadas
+                                </div>
+
+                                <div v-else class="space-y-2 max-h-64 overflow-y-auto">
+                                    <div
+                                        v-for="(value, key) in editingFeature.properties"
+                                        :key="key"
+                                        class="flex gap-2 items-start bg-neutral-50 dark:bg-neutral-900 p-3 rounded-lg"
+                                    >
+                                        <div class="flex-1 grid grid-cols-2 gap-2">
+                                            <UInput
+                                                :model-value="key"
+                                                @update:model-value="updatePropertyKey(key, $event)"
+                                                placeholder="Clave"
+                                                size="sm"
+                                            />
+                                            <UInput
+                                                v-model="editingFeature.properties[key]"
+                                                placeholder="Valor"
+                                                size="sm"
+                                            />
+                                        </div>
+                                        <UButton
+                                            color="error"
+                                            variant="soft"
+                                            icon="i-heroicons-trash"
+                                            size="xs"
+                                            @click="deleteProperty(key)"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Nueva propiedad -->
+                            <div v-if="showNewPropertyForm" class="border-t pt-4">
+                                <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg space-y-3">
+                                    <h5 class="text-sm font-semibold text-blue-700 dark:text-blue-300">Nueva Propiedad</h5>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <UInput
+                                            v-model="newPropertyKey"
+                                            placeholder="Nombre de la propiedad"
+                                            size="md"
+                                        />
+                                        <UInput
+                                            v-model="newPropertyValue"
+                                            placeholder="Valor"
+                                            size="md"
+                                        />
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <UButton
+                                            size="sm"
+                                            color="primary"
+                                            @click="saveNewProperty"
+                                            :disabled="!newPropertyKey || !newPropertyValue"
+                                        >
+                                            Guardar
+                                        </UButton>
+                                        <UButton
+                                            size="sm"
+                                            color="neutral"
+                                            variant="ghost"
+                                            @click="cancelNewProperty"
+                                        >
+                                            Cancelar
+                                        </UButton>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </template>
+
+
+                    <template #footer>
+                        <div class="flex justify-end gap-2">
+                            <UButton
+                                color="neutral"
+                                variant="ghost"
+                                @click="closeEditModal"
+                            >
+                                Cancelar
+                            </UButton>
+                            <UButton
+                                color="primary"
+                                @click="saveProperties"
+                            >
+                                Guardar Cambios
+                            </UButton>
+                        </div>
+                    </template>
+
+            </UModal>
         </UCard>
     </UContainer>
 </template>
 
 <script setup lang="ts">
 import JSZip from 'jszip'
-
-// Asegúrate de tener @vue-leaflet/vue-leaflet instalado
-// Si usas Nuxt, deberías tener un plugin para cargarlo en modo cliente
-// p.ej. ~/plugins/leaflet.client.ts
-// import { LMap, LTileLayer, LMarker, LPopup, LIcon, LPolyline, LPolygon } from '@vue-leaflet/vue-leaflet';
-// import 'leaflet/dist/leaflet.css';
 
 const toast = useToast()
 
@@ -405,8 +620,16 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 const mapRef = ref<any>(null)
 const mapZoom = ref(6)
-const mapCenter = ref<[number, number]>([19.4326, -99.1332]) // Centro en Ciudad de México
+const mapCenter = ref<[number, number]>([19.4326, -99.1332])
 const isClient = ref(false)
+
+// Estados para edición de propiedades
+const showEditModal = ref(false)
+const editingFeature = ref<any>(null)
+const editingIndex = ref<number>(-1)
+const showNewPropertyForm = ref(false)
+const newPropertyKey = ref('')
+const newPropertyValue = ref('')
 
 const visibleFeatures = computed(() => {
     return features.value.filter(f => f.visible)
@@ -436,7 +659,7 @@ const handleFileUpload = async (event: any) => {
     loading.value = true
     error.value = null
     fileName.value = file.name
-    features.value = [] // Limpiar features anteriores
+    features.value = []
 
     fileInfo.value = {
         name: file.name,
@@ -464,8 +687,8 @@ const handleFileUpload = async (event: any) => {
             const kmlContent = await file.text()
             parseKML(kmlContent)
 
-        } else if (fileExtension === 'json') {
-            fileType = 'json'
+        } else if (fileExtension === 'json' || fileExtension === 'geojson') {
+            fileType = 'GeoJSON'
             const geojsonContent = await file.text()
             parseGeoJSON(geojsonContent)
 
@@ -486,7 +709,6 @@ const handleFileUpload = async (event: any) => {
             icon: 'i-heroicons-check-circle',
         })
 
-        // Ajustar vista del mapa
         setTimeout(() => fitBounds(), 500)
 
     } catch (e: any) {
@@ -502,20 +724,15 @@ const handleFileUpload = async (event: any) => {
         })
     } finally {
         loading.value = false
-        // Reset file input para permitir recargar el mismo archivo
         event.target.value = null
     }
 }
 
-/**
- * Parsea contenido KML y lo convierte a la estructura de 'features'
- */
 const parseKML = (kmlString: string) => {
     const parser = new DOMParser()
     const xmlDoc = parser.parseFromString(kmlString, 'text/xml')
     const newFeatures: any[] = []
 
-    // Parsear Placemarks
     const placemarks = xmlDoc.getElementsByTagName('Placemark')
 
     for (let i = 0; i < placemarks.length; i++) {
@@ -535,9 +752,10 @@ const parseKML = (kmlString: string) => {
                     type: 'Point',
                     name,
                     description,
-                    coordinates: [lat, lng], // KML es [lng, lat], Leaflet espera [lat, lng]
+                    coordinates: [lat, lng],
                     color,
-                    visible: true
+                    visible: true,
+                    properties: {}
                 })
             }
         }
@@ -549,7 +767,7 @@ const parseKML = (kmlString: string) => {
             if (coords) {
                 const points = coords.split(/\s+/).filter(c => c).map(coord => {
                     const [lng, lat] = coord.split(',').map(Number)
-                    return [lat, lng] // Swap
+                    return [lat, lng]
                 })
                 newFeatures.push({
                     type: 'LineString',
@@ -557,7 +775,8 @@ const parseKML = (kmlString: string) => {
                     description,
                     coordinates: points,
                     color,
-                    visible: true
+                    visible: true,
+                    properties: {}
                 })
             }
         }
@@ -572,7 +791,7 @@ const parseKML = (kmlString: string) => {
             if (coords) {
                 const points = coords.split(/\s+/).filter(c => c).map(coord => {
                     const [lng, lat] = coord.split(',').map(Number)
-                    return [lat, lng] // Swap
+                    return [lat, lng]
                 })
                 newFeatures.push({
                     type: 'Polygon',
@@ -580,7 +799,8 @@ const parseKML = (kmlString: string) => {
                     description,
                     coordinates: points,
                     color,
-                    visible: true
+                    visible: true,
+                    properties: {}
                 })
             }
         }
@@ -588,9 +808,6 @@ const parseKML = (kmlString: string) => {
     features.value = newFeatures
 }
 
-/**
- * Parsea contenido json y lo convierte a la estructura de 'features'
- */
 const parseGeoJSON = (jsonString: string) => {
     const geojsonData = JSON.parse(jsonString)
     const newFeatures: any[] = []
@@ -601,30 +818,41 @@ const parseGeoJSON = (jsonString: string) => {
     } else if (geojsonData.type === 'Feature') {
         featuresList = [geojsonData]
     } else {
-        throw new Error('Formato json no válido. Se esperaba FeatureCollection o Feature.');
+        throw new Error('Formato GeoJSON no válido. Se esperaba FeatureCollection o Feature.')
     }
 
     featuresList.forEach((feature: any, index: number) => {
         const { geometry, properties } = feature
         if (!geometry) return
 
+        // Extraer propiedades comunes
         const name = properties?.name || properties?.Name || `Elemento ${index + 1}`
         const description = properties?.description || properties?.Description || ''
         const color = properties?.color || getRandomColor(index)
+
+        // Guardar TODAS las propiedades originales (excepto name, description, color que ya manejamos)
+        const additionalProperties: Record<string, any> = {}
+        if (properties) {
+            Object.keys(properties).forEach(key => {
+                const lowerKey = key.toLowerCase()
+                if (lowerKey !== 'name' && lowerKey !== 'description' && lowerKey !== 'color') {
+                    additionalProperties[key] = properties[key]
+                }
+            })
+        }
+
         const type = geometry.type
         let coordinates: any
 
-        // json es [lng, lat], Leaflet espera [lat, lng]
         if (type === 'Point') {
             const [lng, lat] = geometry.coordinates
             coordinates = [lat, lng]
         } else if (type === 'LineString') {
-            coordinates = geometry.coordinates.map((c: number[]) => [c[1], c[0]]) // Swap
+            coordinates = geometry.coordinates.map((c: number[]) => [c[1], c[0]])
         } else if (type === 'Polygon') {
-            // Solo tomamos el anillo exterior por simplicidad, como en KML
-            coordinates = geometry.coordinates[0].map((c: number[]) => [c[1], c[0]]) // Swap
+            coordinates = geometry.coordinates[0].map((c: number[]) => [c[1], c[0]])
         } else {
-            return // Omitir tipos no soportados (MultiPoint, etc.)
+            return
         }
 
         newFeatures.push({
@@ -633,77 +861,75 @@ const parseGeoJSON = (jsonString: string) => {
             description,
             coordinates,
             color,
-            visible: true
+            visible: true,
+            properties: additionalProperties // Guardar todas las propiedades adicionales
         })
     })
     features.value = newFeatures
 }
 
-/**
- * Parsea contenido CSV y lo convierte a la estructura de 'features' (solo Puntos)
- */
 const parseCSV = (csvString: string) => {
     const newFeatures: any[] = []
     const lines = csvString.trim().split(/\r?\n/)
     if (lines.length < 2) {
-        throw new Error('El archivo CSV está vacío o no contiene datos.');
+        throw new Error('El archivo CSV está vacío o no contiene datos.')
     }
 
-    const header = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g, ''));
+    const header = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g, ''))
 
-    // Función para encontrar el índice de una columna por posibles nombres
-    const findCol = (keys: string[]) => keys.reduce((acc, key) => (acc !== -1 ? acc : header.indexOf(key)), -1);
+    const findCol = (keys: string[]) => keys.reduce((acc, key) => (acc !== -1 ? acc : header.indexOf(key)), -1)
 
-    const latCol = findCol(['lat', 'latitude', 'latitud']);
-    const lngCol = findCol(['lon', 'lng', 'longitude', 'longitud']);
+    const latCol = findCol(['lat', 'latitude', 'latitud'])
+    const lngCol = findCol(['lon', 'lng', 'longitude', 'longitud'])
 
     if (latCol === -1 || lngCol === -1) {
-        throw new Error(`No se pudieron encontrar las columnas de latitud/longitud. (Buscando: 'lat', 'latitude', 'latitud', 'lon', 'lng', 'longitude', 'longitud')`);
+        throw new Error('No se pudieron encontrar las columnas de latitud/longitud.')
     }
 
-    // Buscar columnas opcionales de nombre y descripción
-    const nameCol = findCol(['name', 'nombre', 'title', 'titulo']);
-    const descCol = findCol(['description', 'descripcion']);
+    const nameCol = findCol(['name', 'nombre', 'title', 'titulo'])
+    const descCol = findCol(['description', 'descripcion'])
 
     for (let i = 1; i < lines.length; i++) {
-        if (!lines[i]) continue; // Omitir líneas vacías
+        if (!lines[i]) continue
 
-        // Un parser de CSV muy simple (no maneja comas dentro de comillas)
-        // Para algo más robusto, se necesitaría una librería
-        const row = lines[i].split(',');
+        const row = lines[i].split(',')
 
-        if (row.length <= Math.max(latCol, lngCol)) continue; // Skip malformed rows
+        if (row.length <= Math.max(latCol, lngCol)) continue
 
-        const lat = parseFloat(row[latCol]);
-        const lng = parseFloat(row[lngCol]);
+        const lat = parseFloat(row[latCol])
+        const lng = parseFloat(row[lngCol])
 
         if (!isNaN(lat) && !isNaN(lng)) {
-            const name = nameCol !== -1 ? (row[nameCol] || `Punto ${i}`) : `Punto ${i}`;
-            let description = descCol !== -1 ? (row[descCol] || '') : '';
+            const name = nameCol !== -1 ? (row[nameCol] || `Punto ${i}`) : `Punto ${i}`
+            let description = descCol !== -1 ? (row[descCol] || '') : ''
 
-            // Si no hay descripción, construir una con el resto de datos
+            // Construir propiedades adicionales de las columnas restantes
+            const additionalProperties: Record<string, any> = {}
+
             if (!description) {
                 description = header.map((h, idx) => {
                     if (idx !== latCol && idx !== lngCol && idx !== nameCol && row[idx]) {
-                        return `<strong>${h}:</strong> ${row[idx]}`;
+                        additionalProperties[h] = row[idx]
+                        return `<strong>${h}:</strong> ${row[idx]}`
                     }
-                    return '';
-                }).filter(Boolean).join('<br>');
+                    return ''
+                }).filter(Boolean).join('<br>')
             }
 
             newFeatures.push({
-                type: 'Point', // CSVs siempre se parsean como Puntos
+                type: 'Point',
                 name: name,
                 description: description,
-                coordinates: [lat, lng], // CSV ya suele estar en [lat, lng]
+                coordinates: [lat, lng],
                 color: getRandomColor(i),
-                visible: true
-            });
+                visible: true,
+                properties: additionalProperties
+            })
         }
     }
 
     if (newFeatures.length === 0) {
-        throw new Error('No se encontraron puntos válidos en el CSV.');
+        throw new Error('No se encontraron puntos válidos en el CSV.')
     }
     features.value = newFeatures
 }
@@ -725,12 +951,119 @@ const toggleAll = (visible: boolean) => {
     features.value.forEach(f => f.visible = visible)
 }
 
+// Funciones para editar propiedades
+const openEditProperties = (index: number) => {
+    editingIndex.value = index
+    // Crear una copia profunda del feature para editar
+    editingFeature.value = JSON.parse(JSON.stringify(features.value[index]))
+    showEditModal.value = true
+    showNewPropertyForm.value = false
+}
+
+const closeEditModal = () => {
+    showEditModal.value = false
+    editingFeature.value = null
+    editingIndex.value = -1
+    showNewPropertyForm.value = false
+    newPropertyKey.value = ''
+    newPropertyValue.value = ''
+}
+
+const saveProperties = () => {
+    if (editingIndex.value >= 0 && editingFeature.value) {
+        // Actualizar el feature original con los cambios
+        features.value[editingIndex.value] = editingFeature.value
+
+        toast.add({
+            title: 'Propiedades actualizadas',
+            description: 'Los cambios se han guardado exitosamente',
+            color: 'success',
+            icon: 'i-heroicons-check-circle',
+            timeout: 2000
+        })
+
+        closeEditModal()
+    }
+}
+
+const addNewProperty = () => {
+    showNewPropertyForm.value = true
+    newPropertyKey.value = ''
+    newPropertyValue.value = ''
+}
+
+const saveNewProperty = () => {
+    if (newPropertyKey.value && newPropertyValue.value && editingFeature.value) {
+        if (!editingFeature.value.properties) {
+            editingFeature.value.properties = {}
+        }
+
+        // Verificar si la clave ya existe
+        if (editingFeature.value.properties[newPropertyKey.value]) {
+            toast.add({
+                title: 'Propiedad duplicada',
+                description: 'Ya existe una propiedad con ese nombre',
+                color: 'warning',
+                timeout: 3000
+            })
+            return
+        }
+
+        editingFeature.value.properties[newPropertyKey.value] = newPropertyValue.value
+
+        toast.add({
+            title: 'Propiedad agregada',
+            color: 'success',
+            timeout: 2000
+        })
+
+        cancelNewProperty()
+    }
+}
+
+const cancelNewProperty = () => {
+    showNewPropertyForm.value = false
+    newPropertyKey.value = ''
+    newPropertyValue.value = ''
+}
+
+const updatePropertyKey = (oldKey: string, newKey: string) => {
+    if (oldKey === newKey || !editingFeature.value?.properties) return
+
+    // Verificar si la nueva clave ya existe
+    if (editingFeature.value.properties[newKey]) {
+        toast.add({
+            title: 'Propiedad duplicada',
+            description: 'Ya existe una propiedad con ese nombre',
+            color: 'warning',
+            timeout: 3000
+        })
+        return
+    }
+
+    const value = editingFeature.value.properties[oldKey]
+    delete editingFeature.value.properties[oldKey]
+    editingFeature.value.properties[newKey] = value
+}
+
+const deleteProperty = (key: string) => {
+    if (editingFeature.value?.properties) {
+        delete editingFeature.value.properties[key]
+
+        toast.add({
+            title: 'Propiedad eliminada',
+            color: 'warning',
+            timeout: 2000
+        })
+    }
+}
+
 const zoomToFeature = (feature: any) => {
     if (!mapRef.value?.leafletObject) return
 
     if (feature.type === 'Point') {
         mapCenter.value = feature.coordinates
-        mapRef.value.leafletObject.flyTo(feature.coordinates, 15) // Usar flyTo para suavidad
+        mapRef.value.leafletObject.flyTo(feature.coordinates, 15)
     } else if (feature.type === 'LineString' || feature.type === 'Polygon') {
         const bounds = feature.coordinates
         mapRef.value.leafletObject.flyToBounds(bounds, {padding: [50, 50]})
@@ -746,7 +1079,6 @@ const fitBounds = () => {
         if (feature.type === 'Point') {
             allCoords.push(feature.coordinates)
         } else if (feature.type === 'LineString' || feature.type === 'Polygon') {
-            // Asegurarse de no desanidar si ya es plano (para Puntos)
             allCoords.push(...feature.coordinates)
         }
     })
@@ -761,37 +1093,41 @@ const clearAll = () => {
     fileName.value = ''
     fileInfo.value = null
     error.value = null
-    mapRef.value.leafletObject.flyTo([19.4326, -99.1332], 6)
+    if (mapRef.value?.leafletObject) {
+        mapRef.value.leafletObject.flyTo([19.4326, -99.1332], 6)
+    }
 
     toast.add({
         title: 'Datos limpiados',
         color: 'neutral',
-
     })
 }
 
 const exportGeoJSON = () => {
-    const json = {
+    const geojson = {
         type: 'FeatureCollection',
         features: features.value.map(f => {
             let coords: any
-            // Convertir de [lat, lng] de Leaflet a [lng, lat] de json
+
             if (f.type === 'Point') {
-                coords = [f.coordinates[1], f.coordinates[0]] // Swap
+                coords = [f.coordinates[1], f.coordinates[0]]
             } else if (f.type === 'LineString') {
-                coords = f.coordinates.map((c: number[]) => [c[1], c[0]]) // Swap
+                coords = f.coordinates.map((c: number[]) => [c[1], c[0]])
             } else if (f.type === 'Polygon') {
-                // json Polygons requieren un array extra de anidación para los anillos
-                coords = [f.coordinates.map((c: number[]) => [c[1], c[0]])] // Swap y anidar
+                coords = [f.coordinates.map((c: number[]) => [c[1], c[0]])]
+            }
+
+            // Combinar todas las propiedades incluyendo name, description, color y propiedades adicionales
+            const properties: Record<string, any> = {
+                name: f.name,
+                description: f.description,
+                color: f.color,
+                ...f.properties // Incluir todas las propiedades adicionales
             }
 
             return {
                 type: 'Feature',
-                properties: {
-                    name: f.name,
-                    description: f.description,
-                    color: f.color
-                },
+                properties: properties,
                 geometry: {
                     type: f.type,
                     coordinates: coords
@@ -800,18 +1136,18 @@ const exportGeoJSON = () => {
         })
     }
 
-    const blob = new Blob([JSON.stringify(json, null, 2)], {type: 'application/json'})
+    const blob = new Blob([JSON.stringify(geojson, null, 2)], {type: 'application/json'})
     const url = window.URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `${fileName.value || 'export'}_${Date.now()}.json`
+    a.download = `${fileName.value.replace(/\.[^/.]+$/, '') || 'export'}_${Date.now()}.geojson`
     a.click()
     window.URL.revokeObjectURL(url)
 
     toast.add({
-        title: 'json exportado',
+        title: 'GeoJSON exportado',
+        description: 'Archivo descargado con todas las propiedades',
         color: 'success',
-
     })
 }
 
@@ -858,8 +1194,8 @@ const formatFileSize = (bytes: number) => {
 
 /* Estilos para popups */
 .popup-content {
-    min-width: 220px;
-    max-width: 300px; /* Añadido para evitar popups demasiado anchos */
+    min-width: 240px;
+    max-width: 320px;
     padding: 4px;
 }
 
@@ -881,7 +1217,7 @@ const formatFileSize = (bytes: number) => {
     justify-content: center;
     font-size: 16px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    flex-shrink: 0; /* Evitar que el ícono se encoja */
+    flex-shrink: 0;
 }
 
 .popup-title {
@@ -889,7 +1225,7 @@ const formatFileSize = (bytes: number) => {
     font-size: 14px;
     color: #1f2937;
     flex: 1;
-    word-break: break-word; /* Evitar desbordamiento de títulos largos */
+    word-break: break-word;
 }
 
 .popup-description {
@@ -900,16 +1236,62 @@ const formatFileSize = (bytes: number) => {
     font-size: 12px;
     color: #4b5563;
     line-height: 1.4;
-    max-height: 150px; /* Limitar altura de descripción */
-    overflow-y: auto; /* Scroll si es muy larga */
+    max-height: 120px;
+    overflow-y: auto;
 }
 
-/* Estilos para la descripción de CSV */
+/* Estilos para propiedades adicionales */
+.popup-properties {
+    background: #f0f9ff;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #e0f2fe;
+}
+
+.properties-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #0369a1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.properties-grid {
+    display: grid;
+    gap: 6px;
+}
+
+.property-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 12px;
+    padding: 4px 0;
+    border-bottom: 1px solid #e0f2fe;
+}
+
+.property-row:last-child {
+    border-bottom: none;
+}
+
+.property-key {
+    color: #0369a1;
+    font-weight: 600;
+    min-width: fit-content;
+}
+
+.property-value {
+    color: #1e40af;
+    font-weight: 500;
+    text-align: right;
+    word-break: break-word;
+}
+
 .popup-description :deep(strong) {
     color: #374151;
-}
-.popup-description :deep(br) {
-    margin-bottom: 4px;
 }
 
 .popup-coords {
